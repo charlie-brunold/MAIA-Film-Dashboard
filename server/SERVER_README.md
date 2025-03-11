@@ -1,1 +1,0 @@
-The backend application that handles API requests, business logic, database operations, and AI integrations. Built with Node.js.

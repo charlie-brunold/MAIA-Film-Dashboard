@@ -1,1 +1,0 @@
-Sample data files and datasets used by the application. Includes seed data and testing datasets.

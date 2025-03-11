@@ -1,1 +1,0 @@
-Custom React hooks that encapsulate reusable logic. These allow sharing stateful logic between components without introducing additional nesting.

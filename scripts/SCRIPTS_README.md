@@ -1,1 +1,0 @@
-Utility scripts for various development and deployment tasks, such as database seeding, environment setup, or batch processing.

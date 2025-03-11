@@ -1,1 +1,0 @@
-Functions for interacting with the backend API and external services. Centralizes all data fetching and API communication.

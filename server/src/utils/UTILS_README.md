@@ -1,1 +1,0 @@
-Utility functions for the backend application, including error handling, logging, data transformation, and validation.

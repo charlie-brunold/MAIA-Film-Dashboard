@@ -1,1 +1,0 @@
-Contains static assets used by the frontend application, such as images, icons, fonts, and CSS files. These are processed by the build system.

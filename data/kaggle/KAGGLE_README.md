@@ -1,1 +1,0 @@
-The Kaggle movie dataset used for analysis and prediction features. Contains information about movies, budgets, and performance.

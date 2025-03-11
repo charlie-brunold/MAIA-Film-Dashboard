@@ -1,1 +1,0 @@
-Shared UI components used throughout the application such as buttons, form inputs, modals, and navigation elements. These should be highly reusable.

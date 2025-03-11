@@ -1,1 +1,0 @@
-Top-level page components that represent different routes in the application. Each page combines multiple components to create a complete screen.

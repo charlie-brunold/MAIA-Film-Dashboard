@@ -1,1 +1,0 @@
-React Context providers for state management across component hierarchies. Used for themes, user authentication, and other global states.

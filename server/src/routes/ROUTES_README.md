@@ -1,1 +1,0 @@
-API route definitions that map URLs to controller methods. Organizes endpoints by feature or resource type.

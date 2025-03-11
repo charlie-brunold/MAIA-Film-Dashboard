@@ -1,1 +1,0 @@
-API documentation that describes available endpoints, request/response formats, and authentication requirements.

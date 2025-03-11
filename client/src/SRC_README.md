@@ -1,1 +1,0 @@
-The main source code directory for the frontend application. All React components, hooks, and services are organized here.

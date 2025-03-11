@@ -1,1 +1,0 @@
-Services for analyzing film data, predicting outcomes, and generating insights based on the Kaggle movie dataset.

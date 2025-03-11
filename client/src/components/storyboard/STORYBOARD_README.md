@@ -1,1 +1,0 @@
-Components for the storyboarding tool. Includes canvas elements, frame management, and visualization tools for scene planning.

@@ -1,1 +1,0 @@
-Comprehensive project documentation for developers, users, and API consumers. Organized by audience and purpose.

@@ -1,1 +1,0 @@
-Components specific to the main dashboard interface. This includes navigation, summary cards, and data visualization elements.
