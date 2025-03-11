@@ -1,0 +1,1 @@
+Static assets that are served directly without being processed by the build system. Place favicon, robots.txt, and other static files here.
