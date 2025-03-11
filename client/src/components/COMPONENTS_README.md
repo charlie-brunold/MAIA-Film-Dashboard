@@ -1,0 +1,1 @@
+Reusable React components that can be used across multiple pages. Components should be modular, well-documented, and follow a consistent pattern.

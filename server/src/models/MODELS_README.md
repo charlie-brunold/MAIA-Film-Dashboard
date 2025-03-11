@@ -1,0 +1,1 @@
+Data models that define the structure of your application's data. Includes database schemas and validation logic.

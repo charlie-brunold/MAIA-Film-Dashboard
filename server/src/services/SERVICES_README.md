@@ -1,0 +1,1 @@
+Business logic implementation separated from route handling. Contains complex operations and integrations with external systems.

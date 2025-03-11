@@ -1,0 +1,1 @@
+Components for the AI-powered scriptwriting tool. Includes text editors, suggestion panels, and formatting controls for screenplay creation.

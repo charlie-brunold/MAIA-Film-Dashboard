@@ -1,0 +1,1 @@
+Development guides for team members, including setup instructions, coding standards, and workflow processes.

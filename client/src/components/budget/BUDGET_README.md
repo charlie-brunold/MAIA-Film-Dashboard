@@ -1,0 +1,1 @@
+Components for the film budgeting tool. Includes budget calculators, expense tracking, and financial visualization elements.

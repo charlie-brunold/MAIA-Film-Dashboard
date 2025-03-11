@@ -1,0 +1,1 @@
+Services that integrate with AI APIs for scriptwriting, storyboarding, and analysis features. Handles prompt generation and response processing.

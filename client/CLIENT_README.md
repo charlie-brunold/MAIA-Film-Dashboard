@@ -1,0 +1,1 @@
+This is the frontend application built with React. This directory contains all user interface code, components, and assets that users will interact with directly in their browser.
