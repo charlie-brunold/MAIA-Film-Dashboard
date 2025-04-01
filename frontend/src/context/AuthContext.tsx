@@ -1,64 +1,60 @@
-// src/context/AuthContext.tsx
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
-type User = {
+interface User {
   id: number;
   username: string;
   email: string;
   avatar?: string;
   provider?: string;
-};
+}
 
-type AuthContextType = {
+interface AuthContextType {
   user: User | null;
-  token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
-  socialLogin: (provider: string, code: string) => Promise<void>;
-  logout: () => void;
   isLoading: boolean;
   error: string | null;
-};
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => void;
+  initiateOAuthFlow: (provider: string) => void;
+  isAuthenticated: boolean;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    // Load user from localStorage on initial render
-    if (typeof window !== 'undefined') {
-      const storedToken = localStorage.getItem('token');
+    // Check if user is logged in from local storage
+    const checkAuth = () => {
       const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
       
-      if (storedToken && storedUser) {
-        setToken(storedToken);
+      if (storedUser && storedToken) {
         setUser(JSON.parse(storedUser));
+        setIsAuthenticated(true);
       }
-    }
-    
-    // Handle OAuth redirects
-    const handleOAuthRedirect = async () => {
-      if (typeof window !== 'undefined') {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const provider = localStorage.getItem('socialLoginProvider');
-        
-        if (code && provider) {
-          localStorage.removeItem('socialLoginProvider');
-          await socialLogin(provider, code);
-        }
-      }
+      
+      setIsInitialized(true);
     };
     
-    handleOAuthRedirect();
+    checkAuth();
+    
+    // Handle OAuth redirects
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const provider = urlParams.get('provider');
+    
+    if (code && provider) {
+      handleOAuthCallback(code, provider);
+    }
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -66,167 +62,120 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      // In a real implementation, this would be a fetch call to your backend
+      // Example:
+      // const response = await fetch('http://localhost:5000/api/auth/login', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ email, password })
+      // });
       
-      const data = await response.json();
+      // For demo purposes:
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (!response.ok) {
-        throw new Error(data.msg || 'Login failed');
+      // Validate credentials (mock validation)
+      if (email !== 'demo@example.com' && password !== 'password') {
+        // For demo, allow any credentials
       }
       
-      setUser(data.user);
-      setToken(data.access_token);
+      const mockUser = {
+        id: 1,
+        username: email.split('@')[0],
+        email: email,
+      };
       
-      // Store in localStorage
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
+      setUser(mockUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      localStorage.setItem('token', 'mock-jwt-token');
       router.push('/dashboard');
+      
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setError('Failed to login. Please check your credentials and try again.');
     } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const register = async (username: string, email: string, password: string) => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.msg || 'Registration failed');
-      }
-      
-      setUser(data.user);
-      setToken(data.access_token);
-      
-      // Store in localStorage
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      router.push('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  const socialLogin = async (provider: string, code: string) => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const response = await fetch(`http://localhost:5000/api/auth/${provider}/callback`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code }),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.msg || `${provider} login failed`);
-      }
-      
-      setUser(data.user);
-      setToken(data.access_token);
-      
-      // Store in localStorage
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      // Clean up URL parameters
-      if (typeof window !== 'undefined') {
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-      
-      router.push('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const initiateOAuthFlow = (provider: string) => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Store the provider in localStorage to retrieve after redirect
-      localStorage.setItem('socialLoginProvider', provider);
-      
-      let authUrl = '';
-      
-      if (provider === 'google') {
-        // Google OAuth configuration
-        const googleClientId = 'YOUR_GOOGLE_CLIENT_ID';
-        const redirectUri = encodeURIComponent('http://localhost:3000/login');
-        const scope = encodeURIComponent('email profile');
-        
-        authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline`;
-      } else if (provider === 'github') {
-        // GitHub OAuth configuration
-        const githubClientId = 'YOUR_GITHUB_CLIENT_ID';
-        const redirectUri = encodeURIComponent('http://localhost:3000/login');
-        const scope = encodeURIComponent('user:email');
-        
-        authUrl = `https://github.com/login/oauth/authorize?client_id=${githubClientId}&redirect_uri=${redirectUri}&scope=${scope}`;
-      }
-      
-      if (authUrl) {
-        window.location.href = authUrl;
-      } else {
-        throw new Error(`Unsupported provider: ${provider}`);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
       setIsLoading(false);
     }
   };
 
   const logout = () => {
     setUser(null);
-    setToken(null);
-    
-    // Remove from localStorage
-    localStorage.removeItem('token');
+    setIsAuthenticated(false);
     localStorage.removeItem('user');
-    
+    localStorage.removeItem('token');
     router.push('/login');
+  };
+
+  const initiateOAuthFlow = (provider: string) => {
+    let authUrl;
+    
+    if (provider === 'google') {
+      // Replace with your actual Google OAuth configuration
+      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || 'your-google-client-id';
+      const redirectUri = `${window.location.origin}/login`;
+      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile&state=google`;
+    } else if (provider === 'github') {
+      // Replace with your actual GitHub OAuth configuration
+      const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID || 'your-github-client-id';
+      const redirectUri = `${window.location.origin}/login`;
+      authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user:email&state=github`;
+    }
+    
+    if (authUrl) {
+      window.location.href = authUrl;
+    }
+  };
+
+  const handleOAuthCallback = async (code: string, provider: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Clear URL params
+      window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // In a real implementation, you would send the code to your backend
+      // Example:
+      // const response = await fetch(`http://localhost:5000/api/auth/${provider}/callback`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ code })
+      // });
+      
+      // For demo purposes:
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const mockUser = {
+        id: 1,
+        username: provider === 'google' ? 'googleuser' : 'githubuser',
+        email: `${provider}user@example.com`,
+        provider: provider,
+        avatar: provider === 'google' 
+          ? 'https://lh3.googleusercontent.com/a/default-user' 
+          : 'https://avatars.githubusercontent.com/u/default'
+      };
+      
+      setUser(mockUser);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      localStorage.setItem('token', 'mock-jwt-token');
+      router.push('/dashboard');
+      
+    } catch (err) {
+      setError(`Failed to authenticate with ${provider}. Please try again.`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <AuthContext.Provider value={{ 
       user, 
-      token, 
-      login, 
-      register, 
-      socialLogin,
-      initiateOAuthFlow,
-      logout, 
       isLoading, 
-      error 
+      error, 
+      login, 
+      logout, 
+      initiateOAuthFlow,
+      isAuthenticated 
     }}>
       {children}
     </AuthContext.Provider>
