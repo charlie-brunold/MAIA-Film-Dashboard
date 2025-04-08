@@ -5,6 +5,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+import joblib
+import os
 
 
 movie_data_file_path = 'Movie_Data.csv'
@@ -36,7 +38,6 @@ model.fit(train_X, train_y)
 movie_preds = model.predict(val_X)
 print(mean_absolute_error(val_y, movie_preds))
 
-import joblib
 
 output_path = os.path.join(os.path.dirname(__file__), '../app/models/revenue_model.pkl')
 joblib.dump(model, output_path)
