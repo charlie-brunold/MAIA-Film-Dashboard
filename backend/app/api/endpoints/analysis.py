@@ -16,6 +16,12 @@ model = joblib.load(MODEL_PATH)
 @router.route("/predict", methods=["POST"])
 def predict_revenue():
     data = request.get_json(force=True)
+    budget = float(data["budget"])
+    year   = int(data["release_year"])
+    genres = data.get("genres", [])
+    crew   = int(data.get("crew_count", 0))
+    cast   = int(data.get("cast_count", 0))
+    genres_count = int(data.get("genres_count", 0))
 
     # 2) Build a DataFrame with exactly the features your model expects
     df = pd.DataFrame([{
@@ -24,11 +30,11 @@ def predict_revenue():
         "runtime":           data["runtime"],
         "release_month":     data["release_month"],
         "release_year":      data["release_year"],
-        "main_genre":        data["main_genre"],
-        "budget_year_ratio": data["budget_year_ratio"],
-        "cast_count":        data["cast_count"],
-        "genres_count":      data["genres_count"],
-        "crew_count":        data["crew_count"],
+        "main_genre":        genres[0] if genres else "",
+        "budget_year_ratio": budget / (year+1) if year else 0,
+        "cast_count":        cast,
+        "genres_count":      genres_count,
+        "crew_count":        crew,
         "original_language": data["original_language"],
     }])
 
@@ -52,7 +58,6 @@ def predict_revenue():
     return jsonify({
         "predictedRevenue":   round(pred, 2),
         "roi":                round(roi, 1),
-        "successProbability": round(success_probability, 1),
         "recommendations":    recs
     })
 
