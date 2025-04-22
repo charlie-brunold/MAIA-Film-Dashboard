@@ -3,10 +3,12 @@ from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from models.user import db, bcrypt
+from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
 CORS(app)
+load_dotenv()
 
 # Configure database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///maia_film_dashboard.db'
@@ -16,10 +18,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-secret-key')
 
 # OAuth configuration
-app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID', 'your-google-client-id')
-app.config['GOOGLE_CLIENT_SECRET'] = os.environ.get('GOOGLE_CLIENT_SECRET', 'your-google-client-secret')
-app.config['GITHUB_CLIENT_ID'] = os.environ.get('GITHUB_CLIENT_ID', 'your-github-client-id')
-app.config['GITHUB_CLIENT_SECRET'] = os.environ.get('GITHUB_CLIENT_SECRET', 'your-github-client-secret')
+# app.config['GOOGLE_CLIENT_ID'] = os.environ.get('GOOGLE_CLIENT_ID', 'your-google-client-id')
+# app.config['GOOGLE_CLIENT_SECRET'] = os.environ.get('GOOGLE_CLIENT_SECRET', 'your-google-client-secret')
+# app.config['GITHUB_CLIENT_ID'] = os.environ.get('GITHUB_CLIENT_ID', 'your-github-client-id')
+# app.config['GITHUB_CLIENT_SECRET'] = os.environ.get('GITHUB_CLIENT_SECRET', 'your-github-client-secret')
 
 # Initialize extensions
 jwt = JWTManager(app)
@@ -34,7 +36,7 @@ with app.app_context():
 from api.endpoints import scriptwriter, storyboard, budget, analysis, auth
 
 # Register blueprints
-app.register_blueprint(auth.router, url_prefix='/api/auth')
+#app.register_blueprint(auth.router, url_prefix='/api/auth')
 app.register_blueprint(scriptwriter.router, url_prefix='/api/scriptwriter')
 app.register_blueprint(storyboard.router, url_prefix='/api/storyboard')
 app.register_blueprint(budget.router, url_prefix='/api/budget')

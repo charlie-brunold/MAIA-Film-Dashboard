@@ -1,40 +1,37 @@
-# backend/app/api/endpoints/scriptwriter.py
 from flask import Blueprint, request, jsonify
+import os
+import openai
 
-router = Blueprint('scriptwriter', __name__)
+router = Blueprint("scriptwriter", __name__)
 
-@router.route('/generate', methods=['POST'])
+openai.api_key = os.environ["OPENAI_API_KEY"]
+
+@router.route("/generate", methods=["POST"])
 def generate_script():
-    data = request.json
-    prompt = data.get('prompt', '')
-    
-    # In a real implementation, this would call an AI service
-    # For now, we'll return a simple mock response
-    
-    generated_script = f"""
-INT. COFFEE SHOP - DAY
+    data = request.get_json(force=True)
+    req  = data.get("requirements", "").strip()
+    tone = data.get("tone", "dramatic").strip()
+    if not req:
+        return jsonify({"error": "Please provide requirements"}), 400
 
-Two characters sit across from each other at a small table. The atmosphere is tense.
+    prompt = (
+        f"You are a professional screenwriter.\n\n"
+        f"Requirements:\n{req}\n\n"
+        f"Tone/style: {tone}\n\n"
+        f"Write a short scene (dialogue + action)."
+    )
 
-CHARACTER 1
-(nervously)
-I've been meaning to talk to you about something.
-
-CHARACTER 2
-(suspicious)
-What's this about?
-
-CHARACTER 1
-It's about that screenplay we've been working on.
-I think we need to take it in a different direction.
-
-CHARACTER 2
-(defensive)
-Different how? We've been working on this for months!
-
-Based on prompt: "{prompt}"
-"""
-    
-    return jsonify({
-        "script": generated_script
-    })
+    try:
+        resp = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role":"system", "content":"You are an expert screenwriter."},
+                {"role":"user",   "content":prompt}
+            ],
+            temperature=0.7,
+            max_tokens=800
+        )
+        script = resp.choices[0].message.content.strip()
+        return jsonify({"script": script})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
