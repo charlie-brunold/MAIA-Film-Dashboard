@@ -12,8 +12,108 @@ body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
+/* Custom scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Utility classes for animations */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse 5s infinite;
+}
+
+/* Delay classes */
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
+}
+
+.delay-1000 {
+  animation-delay: 1000ms;
+}
+
+/* Base layer styling */
 @layer base {
   h1 {
     @apply text-3xl font-bold md:text-4xl;
@@ -29,39 +129,15 @@ body {
   }
 }
 
-/* Custom utility classes */
-.card {
-  @apply bg-white rounded-lg shadow-md p-6;
+/* Robin's Cut custom styling */
+.robins-cut-btn {
+  @apply py-3 px-6 rounded-full transition-all duration-300 font-medium;
 }
 
-.btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700;
+.robins-cut-btn-primary {
+  @apply bg-indigo-600 text-white hover:bg-indigo-700;
 }
 
-.btn-secondary {
-  @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
-}
-
-.btn {
-  @apply px-4 py-2 rounded-md transition-colors duration-200;
-}
-
-.input-base {
-  @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm;
-}
-
-.form-label {
-  @apply block text-sm font-medium text-gray-700 mb-1;
-}
-
-.feature-icon {
-  @apply w-8 h-8 md:w-10 md:h-10 text-primary-500;
-}
-
-.page-container {
-  @apply px-4 py-6 sm:px-6 lg:px-8;
-}
-
-.section {
-  @apply mb-8 md:mb-12;
+.robins-cut-card {
+  @apply bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl;
 }

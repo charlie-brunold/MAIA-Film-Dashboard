@@ -1,9 +1,8 @@
 // frontend/src/app/storyboard/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '../../components/ui/button';
-import { Card, CardHeader, CardContent } from '../../components/ui/card';
 
 // Define types for our storyboard data
 type StoryboardFrame = {
@@ -55,6 +54,12 @@ export default function Storyboard() {
   const [storyboardFrames, setStoryboardFrames] = useState<StoryboardFrame[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [animateIn, setAnimateIn] = useState(false);
+
+  // Animation effect on load
+  useEffect(() => {
+    setAnimateIn(true);
+  }, []);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,55 +103,56 @@ export default function Storyboard() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">AI Storyboard Generator</h1>
+    <div className={`max-w-6xl mx-auto transition-opacity duration-700 ${animateIn ? 'opacity-100' : 'opacity-0'}`}>
+      <div className="mb-8 text-white text-center">
+        <h1 className="text-4xl md:text-5xl font-bold mb-3 tracking-wider">STORYBOARD GENERATOR</h1>
+        <p className="text-lg opacity-80 max-w-2xl mx-auto">
+          Turn your script into professional storyboard frames with AI-powered visual storytelling
+        </p>
+      </div>
       
-      <Card className="mb-8">
-        <CardHeader>
-          <h2 className="text-xl font-semibold">Generate Your Storyboard</h2>
-          <p className="text-gray-600">Enter a scene description or script excerpt to generate images</p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="bg-black bg-opacity-60 backdrop-blur-md rounded-xl shadow-2xl p-6 mb-12 border border-gray-800">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="script" className="block mb-2 font-mono uppercase text-robins-red-500 tracking-wider text-sm">
+              Scene Description or Script
+            </label>
+            <textarea
+              id="script"
+              className="w-full p-4 bg-gray-900 border border-gray-700 rounded-md text-white h-40 focus:ring-2 focus:ring-robins-red-500 focus:border-robins-red-500"
+              value={scriptContent}
+              onChange={(e) => setScriptContent(e.target.value)}
+              placeholder="INT. COFFEE SHOP - DAY&#10;&#10;ALEX sits alone at a table, nervously checking their watch..."
+              required
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="script" className="block mb-2 font-medium">
-                Scene Description or Script:
-              </label>
-              <textarea
-                id="script"
-                className="w-full p-3 border rounded-md h-32 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                value={scriptContent}
-                onChange={(e) => setScriptContent(e.target.value)}
-                placeholder="INT. COFFEE SHOP - DAY&#10;&#10;ALEX sits alone at a table, nervously checking their watch..."
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="numImages" className="block mb-2 font-medium">
-                Number of Images to Generate (1-5):
+              <label htmlFor="numImages" className="block mb-2 font-mono uppercase text-robins-red-500 tracking-wider text-sm">
+                Number of Images (1-5)
               </label>
               <input
                 id="numImages"
                 type="number"
                 min="1"
                 max="5"
-                className="w-full md:w-1/4 p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full p-3 bg-gray-900 border border-gray-700 rounded-md text-white focus:ring-2 focus:ring-robins-red-500 focus:border-robins-red-500"
                 value={numImages}
                 onChange={(e) => setNumImages(parseInt(e.target.value))}
               />
-              <p className="mt-1 text-sm text-gray-500">
-                Note: Generating more images will take longer
+              <p className="mt-1 text-sm text-gray-400">
+                More images will take longer to generate
               </p>
             </div>
             
             <div>
-              <label htmlFor="storyboardStyle" className="block mb-2 font-medium">
-                Storyboard Style:
+              <label htmlFor="storyboardStyle" className="block mb-2 font-mono uppercase text-robins-red-500 tracking-wider text-sm">
+                Visual Style
               </label>
               <select
                 id="storyboardStyle"
-                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full p-3 bg-gray-900 border border-gray-700 rounded-md text-white focus:ring-2 focus:ring-robins-red-500 focus:border-robins-red-500"
                 value={selectedStyle}
                 onChange={(e) => setSelectedStyle(e.target.value)}
               >
@@ -156,53 +162,76 @@ export default function Storyboard() {
                   </option>
                 ))}
               </select>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-400">
                 {storyboardStyles.find(style => style.id === selectedStyle)?.description}
               </p>
             </div>
-            
-            {error && (
-              <div className="p-3 bg-red-100 border border-red-300 text-red-700 rounded-md">
-                {error}
-              </div>
-            )}
-            
-            <Button
-              type="submit"
-              disabled={isLoading || !scriptContent.trim()}
-              className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
-            >
-              {isLoading ? 'Generating...' : 'Generate Storyboard'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+          
+          {error && (
+            <div className="p-3 bg-red-900 border border-red-700 text-white rounded-md">
+              {error}
+            </div>
+          )}
+          
+          <Button
+            type="submit"
+            disabled={isLoading || !scriptContent.trim()}
+            className="w-full py-3 bg-robins-red-600 text-white rounded-md hover:bg-robins-red-700 transition-colors font-medium tracking-wider uppercase"
+          >
+            {isLoading ? 'Generating...' : 'Generate Storyboard'}
+          </Button>
+        </form>
+      </div>
       
       {isLoading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-          <p className="mt-4 text-lg text-gray-700">Generating your storyboard images...</p>
-          <p className="text-sm text-gray-500">This may take a minute or two</p>
+        <div className="text-center py-16">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-robins-red-500"></div>
+          <p className="mt-6 text-xl text-white">Creating Your Vision</p>
+          <p className="text-gray-400">This may take a minute or two</p>
         </div>
       )}
       
       {storyboardFrames.length > 0 && !isLoading && (
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Your Storyboard</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {storyboardFrames.map((frame) => (
-              <div key={frame.scene_number} className="border rounded-lg overflow-hidden shadow-md">
-                <img 
-                  src={frame.image_url} 
-                  alt={`Scene ${frame.scene_number}`} 
-                  className="w-full aspect-square object-cover"
-                />
-                <div className="p-4 bg-white">
-                  <h3 className="font-semibold text-lg mb-2">Scene {frame.scene_number}</h3>
-                  <p className="text-sm text-gray-700">{frame.description}</p>
+        <div className="animate-fade-in-up">
+          <h2 className="text-3xl font-bold text-white mb-6 text-center tracking-wider">YOUR STORYBOARD</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {storyboardFrames.map((frame, index) => (
+              <div 
+                key={frame.scene_number} 
+                className="bg-black bg-opacity-60 backdrop-blur-sm border border-gray-800 rounded-lg overflow-hidden shadow-lg transform transition-all duration-500 hover:scale-105"
+                style={{ 
+                  animationDelay: `${index * 150}ms`,
+                  animation: 'fadeInUp 0.8s ease-out forwards'
+                }}
+              >
+                <div className="relative">
+                  <img 
+                    src={frame.image_url} 
+                    alt={`Scene ${frame.scene_number}`} 
+                    className="w-full aspect-square object-cover"
+                  />
+                  <div className="absolute top-3 left-3 bg-black bg-opacity-75 text-white px-3 py-1 rounded-md text-sm font-mono">
+                    SCENE {frame.scene_number}
+                  </div>
+                </div>
+                <div className="p-4 text-white">
+                  <p className="text-sm text-gray-300 font-mono border-l-2 border-robins-red-500 pl-3">
+                    {frame.description}
+                  </p>
                 </div>
               </div>
             ))}
+          </div>
+          
+          <div className="mt-10 text-center">
+            <Button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="bg-gray-800 text-white hover:bg-gray-700 px-6 py-2 rounded-md"
+            >
+              Generate Another
+            </Button>
           </div>
         </div>
       )}
